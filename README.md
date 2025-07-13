@@ -19,25 +19,36 @@ A high-performance API endpoint discovery tool built in Go with intelligent fals
 ```bash
 git clone https://github.com/davidwkirsch/api_spray.git
 cd api_spray
-go build -o api_spray main.go
+go install
+```
+
+This will install `api_spray` to your `$GOPATH/bin` directory, making it available as a global command.
+
+### Direct Install
+
+If you have Go installed, you can install directly:
+
+```bash
+go install github.com/davidwkirsch/api_spray@latest
 ```
 
 ### Prerequisites
 
 - Go 1.19 or later
+- `$GOPATH/bin` in your `$PATH` environment variable
 
 ## Quick Start
 
 Basic usage with default settings:
 
 ```bash
-./api_spray -targets targets.txt -wordlist words.txt
+api_spray -targets targets.txt -wordlist words.txt
 ```
 
 High-performance scan with custom settings:
 
 ```bash
-./api_spray -targets targets.txt -wordlist words.txt -threads 100 -batch 20 -timeout 5s
+api_spray -targets targets.txt -wordlist words.txt -threads 100 -batch 20 -timeout 5s
 ```
 
 ## Command Line Options
@@ -82,7 +93,7 @@ High-performance scan with custom settings:
 Scans for API endpoints using wildcard patterns:
 
 ```bash
-./api_spray -targets targets.txt -wordlist words.txt -mode wildcards
+api_spray -targets targets.txt -wordlist words.txt -mode wildcards
 ```
 
 **Example URLs generated:**
@@ -95,7 +106,7 @@ Scans for API endpoints using wildcard patterns:
 Scans for directory-based endpoints:
 
 ```bash
-./api_spray -targets targets.txt -wordlist words.txt -mode directories
+api_spray -targets targets.txt -wordlist words.txt -mode directories
 ```
 
 **Example URLs generated:**
@@ -108,7 +119,7 @@ Scans for directory-based endpoints:
 Scans for subdomain-based endpoints:
 
 ```bash
-./api_spray -targets targets.txt -wordlist words.txt -mode subdomains
+api_spray -targets targets.txt -wordlist words.txt -mode subdomains
 ```
 
 **Example URLs generated:**
@@ -148,37 +159,37 @@ login
 ### Basic API Discovery
 
 ```bash
-./api_spray -targets domains.txt -wordlist api_words.txt
+api_spray -targets domains.txt -wordlist api_words.txt
 ```
 
 ### High-Performance Scan
 
 ```bash
-./api_spray -targets domains.txt -wordlist large_wordlist.txt -threads 200 -batch 50 -timeout 3s
+api_spray -targets domains.txt -wordlist large_wordlist.txt -threads 200 -batch 50 -timeout 3s
 ```
 
 ### Resume Interrupted Scan
 
 ```bash
-./api_spray -targets domains.txt -wordlist words.txt -resume
+api_spray -targets domains.txt -wordlist words.txt -resume
 ```
 
 ### Custom Status Codes
 
 ```bash
-./api_spray -targets domains.txt -wordlist words.txt -status-codes "200,201,204,301,302"
+api_spray -targets domains.txt -wordlist words.txt -status-codes "200,201,204,301,302"
 ```
 
 ### HTTPS Only Scan
 
 ```bash
-./api_spray -targets domains.txt -wordlist words.txt -disable-http
+api_spray -targets domains.txt -wordlist words.txt -disable-http
 ```
 
 ### Subdomain Discovery
 
 ```bash
-./api_spray -targets domains.txt -wordlist subdomains.txt -mode subdomains -threads 100
+api_spray -targets domains.txt -wordlist subdomains.txt -mode subdomains -threads 100
 ```
 
 ## Output
