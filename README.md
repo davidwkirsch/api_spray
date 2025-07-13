@@ -1,108 +1,238 @@
-# API Spray - Restructured
+# API Spray
 
-A high-performance API endpoint discovery tool built in Go, now with a clean, modular architecture.
+A high-performance API endpoint discovery tool built in Go with intelligent false positive detection and resume capabilities.
 
-## Project Structure
+## Features
 
-```
-api-spray/
-├── main.go                     # Simple main entry point
-├── go.mod                      # Go module definition
-├── pkg/                        # Public packages
-│   └── types/                  # Shared types and interfaces
-│       └── types.go
-├── internal/                   # Private application packages
-│   ├── config/                 # Configuration handling
-│   │   └── config.go
-│   ├── http/                   # HTTP client functionality
-│   │   └── client.go
-│   ├── output/                 # Output management (CSV, logs)
-│   │   └── manager.go
-│   ├── progress/               # Progress tracking and resume
-│   │   └── manager.go
-│   └── scanner/                # Main scanning engine
-│       └── scanner.go
-└── old_main.go                 # Original monolithic file (backup)
-```
+- **Multiple Scan Modes**: Wildcards, directories, and subdomains
+- **High Performance**: Concurrent processing with configurable threads
+- **False Positive Detection**: Automatically filters out common false positives
+- **Resume Functionality**: Continue interrupted scans from where they left off
+- **Flexible Output**: CSV results with detailed response information
+- **HTTP/HTTPS Support**: Automatic protocol detection and fallback
+- **Customizable**: Configurable timeouts, retries, and status codes
 
-## Architecture Benefits
+## Installation
 
-### 1. **Separation of Concerns**
-- Each package has a single responsibility
-- Easy to test individual components
-- Clear interfaces between modules
-
-### 2. **Modular Design**
-- `pkg/types`: Shared data structures
-- `internal/config`: Configuration parsing and file loading
-- `internal/http`: HTTP client with retry logic
-- `internal/output`: CSV and log file management
-- `internal/progress`: Progress tracking and false positive detection
-- `internal/scanner`: Main orchestration logic
-
-### 3. **Maintainability**
-- Small, focused files instead of one large file
-- Easy to add new features without affecting existing code
-- Clear package boundaries
-
-### 4. **Extensibility**
-- Easy to add new scan modes
-- Simple to implement new output formats
-- Straightforward to add new HTTP features
-
-## Usage
-
-The tool maintains the same command-line interface:
+### From Source
 
 ```bash
-go run main.go -targets targets.txt -wordlist words.txt -threads 100
+git clone https://github.com/davidwkirsch/api_spray.git
+cd api_spray
+go build -o api_spray main.go
 ```
 
-## Key Components
+### Prerequisites
 
-### Config Package
-- Parses command line flags
-- Loads target and wordlist files
-- Validates configuration
+- Go 1.19 or later
 
-### HTTP Package
-- Manages HTTP client with connection pooling
-- Handles retries and timeouts
-- Generates URLs based on scan mode
-- Extracts titles from HTML responses
+## Quick Start
 
-### Scanner Package
-- Orchestrates the scanning process
-- Manages worker goroutines
-- Tracks statistics
-- Handles batch processing
-
-### Progress Package
-- Tracks scan progress for resume functionality
-- Implements false positive detection
-- Manages completed work tracking
-
-### Output Package
-- Writes results to CSV files
-- Manages log files
-- Handles error filtering
-
-## Future Enhancements
-
-With this structure, you can easily add:
-
-1. **New Scan Modes**: Add to `types.go` and implement in `http/client.go`
-2. **Output Formats**: Create new writers in `output/` package
-3. **Authentication**: Extend `http/client.go` 
-4. **Rate Limiting**: Add to `scanner/scanner.go`
-5. **Plugins**: Create new packages in `internal/`
-6. **API Server**: Add `cmd/server/` for web interface
-7. **Different Backends**: Add `internal/storage/` for databases
-
-## Building
+Basic usage with default settings:
 
 ```bash
-go build -o api-spray main.go
+./api_spray -targets targets.txt -wordlist words.txt
 ```
 
-The modular structure makes the codebase much more maintainable and extensible while preserving all existing functionality.
+High-performance scan with custom settings:
+
+```bash
+./api_spray -targets targets.txt -wordlist words.txt -threads 100 -batch 20 -timeout 5s
+```
+
+## Command Line Options
+
+### Required Arguments
+
+| Flag | Description | Example |
+|------|-------------|---------|
+| `-targets` | File containing target domains | `-targets domains.txt` |
+| `-wordlist` | Wordlist file for endpoint discovery | `-wordlist api_endpoints.txt` |
+
+### Scan Configuration
+
+| Flag | Default | Description | Example |
+|------|---------|-------------|---------|
+| `-mode` | `wildcards` | Scan mode: `wildcards`, `directories`, `subdomains` | `-mode directories` |
+| `-threads` | `50` | Number of concurrent threads | `-threads 100` |
+| `-batch` | `10` | Number of words processed per batch | `-batch 20` |
+| `-timeout` | `10s` | HTTP request timeout | `-timeout 5s` |
+
+### HTTP Configuration
+
+| Flag | Default | Description | Example |
+|------|---------|-------------|---------|
+| `-disable-http` | `false` | Disable HTTP fallback (HTTPS only) | `-disable-http` |
+| `-follow-redirects` | `true` | Follow HTTP redirects | `-follow-redirects=false` |
+| `-retries` | `1` | Maximum retries per request | `-retries 3` |
+| `-user-agent` | `Mozilla/5.0 (compatible; api_spray/1.0)` | Custom user agent | `-user-agent "MyBot/1.0"` |
+| `-status-codes` | `200` | Success status codes (comma-separated) | `-status-codes "200,201,204"` |
+
+### Output and Resume
+
+| Flag | Default | Description | Example |
+|------|---------|-------------|---------|
+| `-outdir` | `results` | Output directory for results | `-outdir /tmp/scan_results` |
+| `-resume` | `false` | Resume previous scan | `-resume` |
+
+## Scan Modes
+
+### Wildcards Mode (Default)
+
+Scans for API endpoints using wildcard patterns:
+
+```bash
+./api_spray -targets targets.txt -wordlist words.txt -mode wildcards
+```
+
+**Example URLs generated:**
+- `https://example.com/api/users`
+- `https://example.com/v1/admin`
+- `https://example.com/api/v2/health`
+
+### Directories Mode
+
+Scans for directory-based endpoints:
+
+```bash
+./api_spray -targets targets.txt -wordlist words.txt -mode directories
+```
+
+**Example URLs generated:**
+- `https://example.com/admin/`
+- `https://example.com/api/`
+- `https://example.com/v1/`
+
+### Subdomains Mode
+
+Scans for subdomain-based endpoints:
+
+```bash
+./api_spray -targets targets.txt -wordlist words.txt -mode subdomains
+```
+
+**Example URLs generated:**
+- `https://api.example.com/`
+- `https://admin.example.com/`
+- `https://v1.example.com/`
+
+## Input Files
+
+### Targets File
+
+Create a file with one domain per line:
+
+```
+example.com
+api.company.com
+test.domain.org
+```
+
+### Wordlist File
+
+Create a file with one word/endpoint per line:
+
+```
+api
+admin
+v1
+v2
+users
+health
+status
+login
+```
+
+## Examples
+
+### Basic API Discovery
+
+```bash
+./api_spray -targets domains.txt -wordlist api_words.txt
+```
+
+### High-Performance Scan
+
+```bash
+./api_spray -targets domains.txt -wordlist large_wordlist.txt -threads 200 -batch 50 -timeout 3s
+```
+
+### Resume Interrupted Scan
+
+```bash
+./api_spray -targets domains.txt -wordlist words.txt -resume
+```
+
+### Custom Status Codes
+
+```bash
+./api_spray -targets domains.txt -wordlist words.txt -status-codes "200,201,204,301,302"
+```
+
+### HTTPS Only Scan
+
+```bash
+./api_spray -targets domains.txt -wordlist words.txt -disable-http
+```
+
+### Subdomain Discovery
+
+```bash
+./api_spray -targets domains.txt -wordlist subdomains.txt -mode subdomains -threads 100
+```
+
+## Output
+
+### CSV Results
+
+Results are saved in CSV format with the following columns:
+
+- `target`: Target domain
+- `word`: Word from wordlist
+- `url`: Full URL tested
+- `status_code`: HTTP status code
+- `content_length`: Response size in bytes
+- `response_time_ms`: Response time in milliseconds
+- `title`: HTML title (if available)
+- `error`: Error message (if any)
+
+### Directory Structure
+
+```
+results/
+├── results.csv          # Main results file
+├── progress.json        # Progress tracking for resume
+├── errors.log          # Error log
+└── scan.log            # Detailed scan log
+```
+
+## False Positive Detection
+
+API Spray automatically detects and filters false positives by:
+
+1. **Response Size Tracking**: Monitors response sizes for each target and status code
+2. **Threshold-Based Filtering**: Filters responses that appear more than 10 times with the same size
+3. **Adaptive Learning**: Continuously learns patterns during the scan
+
+## Performance Tips
+
+1. **Adjust Thread Count**: Start with 50 threads and increase based on your system and network
+2. **Optimize Batch Size**: Larger batches (20-50) can improve performance for large wordlists
+3. **Set Appropriate Timeout**: Use shorter timeouts (3-5s) for faster scans
+4. **Use Resume Feature**: For large scans, use `-resume` to continue interrupted scans
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Disclaimer
+
+This tool is intended for authorized security testing only. Users are responsible for ensuring they have proper authorization before scanning any targets.
