@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"api_spray/pkg/types"
+	"github.com/davidwkirsch/api_spray/pkg/types"
 )
 
 // ParseFlags parses command line flags and returns a Config

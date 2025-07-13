@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"api_spray/pkg/types"
+	"github.com/davidwkirsch/api_spray/pkg/types"
 )
 
 // Client wraps HTTP client functionality

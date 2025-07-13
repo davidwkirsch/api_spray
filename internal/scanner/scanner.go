@@ -9,10 +9,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"api_spray/internal/http"
-	"api_spray/internal/output"
-	"api_spray/internal/progress"
-	"api_spray/pkg/types"
+	"github.com/davidwkirsch/api_spray/internal/http"
+	"github.com/davidwkirsch/api_spray/internal/output"
+	"github.com/davidwkirsch/api_spray/internal/progress"
+	"github.com/davidwkirsch/api_spray/pkg/types"
 )
 
 // Scanner is the main scanning engine

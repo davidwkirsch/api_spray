@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"api_spray/internal/config"
-	"api_spray/internal/scanner"
+	"github.com/davidwkirsch/api_spray/internal/config"
+	"github.com/davidwkirsch/api_spray/internal/scanner"
 )
 
 func main() {

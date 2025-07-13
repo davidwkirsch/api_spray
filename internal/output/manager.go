@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"api_spray/pkg/types"
+	"github.com/davidwkirsch/api_spray/pkg/types"
 )
 
 // Manager handles all output operations

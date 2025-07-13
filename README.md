@@ -34,7 +34,7 @@ go install github.com/davidwkirsch/api_spray@latest
 
 ### Prerequisites
 
-- Go 1.19 or later
+- Go 1.21 or later
 - `$GOPATH/bin` in your `$PATH` environment variable
 
 ## Quick Start
